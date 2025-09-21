@@ -82,3 +82,16 @@ const inode_t InodePathByInode::inode_ = SPECIAL_INODE_PATH_BY_INODE;
 const Attributes InodeMountInfo::attr =
 	  {{'f', 0x01,0xED, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,1, 0,0,0,0,0,0,0,0}};
 const inode_t InodeMountInfo::inode_ = SPECIAL_INODE_MOUNT_INFO;
+
+// Win: 0x01B6 == 0b110110110 == 0666
+// Other OSs: 0x01A4 == 0b110100100 == 0644
+const Attributes InodePichardo::attr = [] {
+	Attributes attrs{{'f', 0x01, 0xA4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	                  0,   0,    0,    0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0}};
+#ifdef _WIN32
+	attrs[2] = 0xB6;
+#endif
+	return attrs;
+}();
+
+const inode_t InodePichardo::inode_ = SPECIAL_INODE_PICHARDO;

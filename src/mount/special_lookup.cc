@@ -205,6 +205,28 @@ static EntryParam lookup(const Context &ctx, inode_t parent, const char *name,
 }
 } // InodeMountInfo
 
+namespace InodePichardo{
+static EntryParam lookup(const Context &ctx, inode_t parent, const char *name,
+	                            char attrstr[256]) {
+	EntryParam e;
+	e.ino = inode_;
+	e.attr_timeout = 3600.0;
+	e.entry_timeout = 3600.0;
+	attr_to_stat(inode_, attr, &e.attr);
+	e.attr.st_size = stats_get_length();
+	stats_inc(OP_LOOKUP_INTERNAL);
+	makeattrstr(attrstr, 256, &e.attr);
+	oplog_printf(ctx, "lookup (%" PRIiNode ",%s) (internal node: STATS): OK (%.1f,%" PRIiNode ",%.1f,%s)",
+	            parent,
+	            name,
+	            e.entry_timeout,
+	            e.ino,
+	            e.attr_timeout,
+	            attrstr);
+	return e;
+}
+} // InodePichardo
+
 static const std::array<std::function<EntryParam
 	(const Context&, inode_t, const char*, char[256])>, 16> funcs = {{
 	 &InodeStats::lookup,           //0x0U
@@ -217,7 +239,7 @@ static const std::array<std::function<EntryParam
 	 nullptr,                       //0x7U
 	 &InodePathByInode::lookup,     //0x8U
 	 &InodeMountInfo::lookup,       //0x9U
-	 nullptr,                       //0xAU
+	 &InodePichardo::lookup,        //0xAU
 	 nullptr,                       //0xBU
 	 nullptr,                       //0xCU
 	 nullptr,                       //0xDU

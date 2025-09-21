@@ -99,6 +99,11 @@ namespace InodeMountInfo {
 	extern const inode_t inode_;
 }
 
+namespace InodePichardo{
+	extern const Attributes attr;
+	extern const inode_t inode_;
+}
+
 std::vector<uint8_t> special_read(inode_t ino, const SaunaClient::Context &ctx,
 	                          size_t size, off_t off, SaunaClient::FileInfo *fi, int debug_mode);
 

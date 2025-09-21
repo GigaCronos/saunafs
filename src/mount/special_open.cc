@@ -25,6 +25,7 @@
 #include "mount/client_common.h"
 #include "mount/special_inode.h"
 #include "mount/stats.h"
+#include "mount/pichardo.h"
 
 using namespace SaunaClient;
 
@@ -142,6 +143,23 @@ static void open(const Context &ctx, FileInfo *fi) {
 }
 }  // InodeMountInfo
 
+namespace InodePichardo {
+static void open(const Context &ctx, FileInfo *fi) {
+	std::lock_guard lock(gPichardoMtx);
+	if ((fi->flags & O_ACCMODE) != O_RDONLY) {
+		oplog_printf(ctx, "open (%" PRIiNode ") (internal node: PICHARDO): %s",
+		             inode_, saunafs_error_string(SAUNAFS_ERROR_EACCES));
+		throw RequestException(SAUNAFS_ERROR_EACCES);
+	}
+	gPichardoInfo.open();
+	fi->fh = reinterpret_cast<uintptr_t>(gPichardoInfo.getInfoCopy());
+	fi->direct_io = 1;
+	fi->keep_cache = 0;
+	oplog_printf(ctx, "open (%" PRIiNode ") (internal node: PICHARDO): OK (1,0)",
+	             inode_);
+}
+}  // InodePichardo
+
 static const std::array<std::function<void
 	(const Context&, FileInfo*)>, 16> funcs = {{
 	 &InodeStats::open,             //0x0U
@@ -154,7 +172,7 @@ static const std::array<std::function<void
 	 nullptr,                       //0x7U
 	 &InodePathByInode::open,       //0x8U
 	 &InodeMountInfo::open,         //0x9U
-	 nullptr,                       //0xAU
+	 &InodePichardo::open,          //0xAU
 	 nullptr,                       //0xBU
 	 nullptr,                       //0xCU
 	 nullptr,                       //0xDU

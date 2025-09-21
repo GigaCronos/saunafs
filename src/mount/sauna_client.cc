@@ -215,6 +215,9 @@ inode_t getSpecialInodeByName(const char *name) {
 		return SPECIAL_INODE_PATH_BY_INODE;
 	} else if (strcmp(name, SPECIAL_FILE_NAME_MOUNT_INFO) == 0) {
 		return SPECIAL_INODE_MOUNT_INFO;
+	} else if (strcmp(name, SPECIAL_FILE_NAME_PICHARDO) == 0) {
+		std::cout<<"F \n F \n"<<std::endl;
+		return SPECIAL_INODE_PICHARDO;
 	} else {
 		return MAX_REGULAR_INODE;
 	}

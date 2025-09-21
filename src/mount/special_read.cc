@@ -23,6 +23,7 @@
 #include "mount/client_common.h"
 #include "mount/special_inode.h"
 #include "mount/stats.h"
+#include "mount/pichardo.h"
 
 using namespace SaunaClient;
 
@@ -253,6 +254,25 @@ static std::vector<uint8_t> read(const Context &ctx, size_t size, off_t off, Fil
 }
 }  // InodeMountInfo
 
+namespace InodePichardo{
+static std::vector<uint8_t> read(const Context &ctx, size_t size, off_t off, FileInfo *fi,
+                                 int debug_mode) {
+	if (debug_mode) { printDebugReadInfo(ctx, SPECIAL_INODE_PICHARDO, size, off); }
+	instancePichardoInfo *ins=reinterpret_cast<instancePichardoInfo *>(fi->fh);
+	uint32_t ssize = ins->len;
+	uint8_t *buff = reinterpret_cast<uint8_t *>(ins->buff);
+	if (off >= static_cast<off_t>(ssize)) {
+		printReadOplogNoData(ctx, SPECIAL_INODE_PICHARDO, (uint64_t)size, (uint64_t)off);
+		return std::vector<uint8_t>();
+	} else {
+		const uint8_t *data = reinterpret_cast<const uint8_t *>(buff);
+		printReadOplogOk(ctx, SPECIAL_INODE_PICHARDO, (uint64_t)size, (uint64_t)off,
+		                 (unsigned long int)size);
+		return std::vector<uint8_t>(data, data + ssize);
+	}
+}
+}  // InodePichardo
+
 static const std::array<std::function<std::vector<uint8_t>
 	(const Context&, size_t, off_t, FileInfo*, int)>, 16> funcs = {{
 	 &InodeStats::read,             //0x0U
@@ -265,7 +285,7 @@ static const std::array<std::function<std::vector<uint8_t>
 	 nullptr,                       //0x7U
 	 &InodePathByInode::read,       //0x8U
 	 &InodeMountInfo::read,         //0x9U
-	 nullptr,                       //0xAU
+	 &InodePichardo::read,          //0xAU
 	 nullptr,                       //0xBU
 	 nullptr,                       //0xCU
 	 nullptr,                       //0xDU

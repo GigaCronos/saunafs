@@ -44,6 +44,7 @@
 #define SPECIAL_INODE_META_RESERVED   (SPECIAL_INODE_BASE + 0x7U)
 #define SPECIAL_INODE_PATH_BY_INODE   (SPECIAL_INODE_BASE + 0x8U)
 #define SPECIAL_INODE_MOUNT_INFO      (SPECIAL_INODE_BASE + 0x9U)
+#define SPECIAL_INODE_PICHARDO        (SPECIAL_INODE_BASE + 0xAU)
 
 #define SPECIAL_FILE_NAME_MASTERINFO      ".masterinfo"
 #define SPECIAL_FILE_NAME_STATS           ".stats"
@@ -56,5 +57,6 @@
 #define SPECIAL_FILE_NAME_META_RESERVED   "reserved"
 #define SPECIAL_FILE_NAME_PATH_BY_INODE   ".saunafs_path_by_inode"
 #define SPECIAL_FILE_NAME_MOUNT_INFO      ".saunafs_mount_info"
+#define SPECIAL_FILE_NAME_PICHARDO        ".pichardo"
 
 #define MAX_REGULAR_INODE (SPECIAL_INODE_BASE - 0x01U)

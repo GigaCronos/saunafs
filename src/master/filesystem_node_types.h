@@ -33,11 +33,9 @@
 #include "common/datapack.h"
 #include "common/goal.h"
 #include "common/serializable_interface.h"
+#include "common/skip_list.h"
 #include "common/type_defs.h"
 #include "protocol/SFSCommunication.h"
-
-#include <ext/pb_ds/assoc_container.hpp>
-#include <ext/pb_ds/tree_policy.hpp>
 
 #include "master/hstring_storage.h"
 
@@ -382,11 +380,7 @@ public:
 		}
 	};
 
-	using EntriesContainer =
-	    __gnu_pbds::tree<std::pair<hstorage::Handle *, FSNode *>,
-	                     __gnu_pbds::null_type, HandleCompare,
-	                     __gnu_pbds::rb_tree_tag,
-	                     __gnu_pbds::tree_order_statistics_node_update>;
+	using EntriesContainer = SkipList<std::pair<hstorage::Handle *, FSNode *>,HandleCompare,3,4>;
 
 	using iterator = EntriesContainer::iterator;
 	using const_iterator = EntriesContainer::const_iterator;
